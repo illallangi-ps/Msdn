@@ -1,0 +1,128 @@
+<?define Manufacturer="Illallangi Enterprises" ?>
+<?define AppName="Msdn PowerShell Module" ?>
+<?define Version="0.0.0.1" ?>
+
+<?if $(sys.BUILDARCH)=x64 ?>
+<?define Win64="yes" ?>
+<?define PlatformProgramFilesFolder="ProgramFiles64Folder" ?>
+<?define PlatformSystemFolder="System64Folder" ?>
+<?define ProductId="{CEFB8868-CB9D-49DA-A8F1-5874C94A798A}" ?>
+<?define UpgradeCode="{575D6466-7CCA-4796-9C00-DC71CC901868}" ?>
+<?else ?>
+<?define Win64="no" ?>
+<?define PlatformProgramFilesFolder="ProgramFilesFolder" ?>
+<?define PlatformSystemFolder="SystemFolder" ?>
+<?define ProductId="{B26FAA42-ECF3-463B-B9DE-DE60DB6C1863}" ?>
+<?define UpgradeCode="{098F3E13-8831-4F7C-8B12-BE146DBD9828}" ?>
+<?endif ?>
+
+<Wix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Name="$(var.AppName) $(sys.BUILDARCH) v$(var.Version)"
+           Manufacturer="$(var.Manufacturer)"
+           Version="$(var.Version)"
+           Id="$(var.ProductId)"
+           UpgradeCode="$(var.UpgradeCode)"
+           Language="1033"
+           Codepage="1252" >
+
+    <Package InstallerVersion="200" Compressed="yes" Id="*" />
+    <Media Id="1" Cabinet="package.cab" EmbedCab="yes" />
+
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.Version)"
+                      IncludeMinimum="no"
+                      OnlyDetect="yes"
+                      Language="1033"
+                      Property="NEWPRODUCTFOUND"/>
+
+      <UpgradeVersion Maximum="$(var.Version)"
+                      IncludeMaximum="no"
+                      OnlyDetect="no"
+                      Language="1033"
+                      Property="OLDPRODUCTFOUND"/>
+    </Upgrade>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Component Id="Empty" Guid="" />
+      <Directory Id="$(var.PlatformSystemFolder)">
+        <Directory Id="WindowsPowerShell" Name="WindowsPowerShell">
+          <Directory Id="v1.0" Name="v1.0">
+            <Directory Id="Modules" Name="Modules">
+              <Directory Id="SOFTWAREDIR" Name="Illallangi.Msdn" />
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <!--
+    <Icon Id="favicon.ico" SourceFile="$(var.source)\favicon.ico" />
+    -->
+    <Property Id="ALLUSERS" Value="1" />
+    <Property Id="ARPPRODUCTICON" Value="favicon.ico" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+
+    <Feature Id="Complete" Level="1" Title="$(var.AppName)">
+      <Component Id="IllallangiMsdnComponent" Directory="SOFTWAREDIR" Guid="{3FC105C9-B300-46FA-99A5-AFB260FEEACB}" Permanent="yes" >
+        <File Id="IllallangiMsdndll" KeyPath="yes" Source="$(var.source)\Illallangi.Msdn.dll" />
+        <File Id="IllallangiMsdndllconfig" Source="$(var.source)\Illallangi.Msdn.dll.config" />
+        <File Id="IllallangiMsdndllpsd1" Source="$(var.source)\Illallangi.Msdn.psd1" />
+        <File Id="IllallangiMsdndllpsm1" Source="$(var.source)\Illallangi.Msdn.psm1" />
+      </Component>
+      <Component Id="log4netComponent" Directory="SOFTWAREDIR" Guid="{34A43D87-002E-47B6-97E1-0ECD50312BE5}" Permanent="yes" >
+        <File Id="log4netdll" KeyPath="yes" Source="$(var.source)\log4net.dll" />
+      </Component>
+      <Component Id="NewtonsoftJsonComponent" Directory="SOFTWAREDIR" Guid="{C7FC292F-E707-406B-BF07-A3D92B8D509C}" Permanent="yes" >
+        <File Id="NewtonsoftJsondll" KeyPath="yes" Source="$(var.source)\Newtonsoft.Json.dll" />
+      </Component>
+      <Component Id="NinjectComponent" Directory="SOFTWAREDIR" Guid="{6C608F9E-E642-4C23-A9FD-AED6BA43B101}" Permanent="yes" >
+        <File Id="Ninjectdll" KeyPath="yes" Source="$(var.source)\Ninject.dll" />
+      </Component>
+      <Component Id="NinjectExtensionsLoggingComponent" Directory="SOFTWAREDIR" Guid="{54459AA9-6362-454F-B5C4-C7DF643C64B5}" Permanent="yes" >
+        <File Id="NinjectExtensionsLoggingdll" KeyPath="yes" Source="$(var.source)\Ninject.Extensions.Logging.dll" />
+      </Component>
+      <Component Id="NinjectExtensionsLoggingLog4NetComponent" Directory="SOFTWAREDIR" Guid="{E6EC5858-B2D6-485C-BB37-723559A4DD3F}" Permanent="yes" >
+        <File Id="NinjectExtensionsLoggingLog4Netdll" KeyPath="yes" Source="$(var.source)\Ninject.Extensions.Logging.Log4Net.dll" />
+      </Component>
+      <Component Id="RestSharpComponent" Directory="SOFTWAREDIR" Guid="{4B66F9DF-D1F1-4A1B-A8F8-FE27FF4D0D60}" Permanent="yes" >
+        <File Id="RestSharpdll" KeyPath="yes" Source="$(var.source)\RestSharp.dll" />
+      </Component>
+      <ComponentRef Id="Empty" />
+    </Feature>
+
+
+    <UI Id="Minimal">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode" Value="Minimal" />
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+      <DialogRef Id="WelcomeDlg" />
+      <DialogRef Id="VerifyReadyDlg" />
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
+      <Publish Dialog='ExitDialog' Control='Finish' Event='EndDialog' Value='Return'>1</Publish>
+    </UI>
+
+    <UIRef Id="WixUI_Common" />
+
+    <CustomAction Id="PreventDowngrading" Error="Newer version already installed." />
+
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallInitialize" />
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+    </InstallUISequence>
+  </Product>
+</Wix>
