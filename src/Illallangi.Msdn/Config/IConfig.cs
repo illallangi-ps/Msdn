@@ -1,4 +1,6 @@
-﻿namespace Illallangi.Msdn.Config
+﻿using System.Collections.Generic;
+
+namespace Illallangi.Msdn.Config
 {
     public interface IConfig
     {
@@ -8,5 +10,9 @@
         IConfigUris Uris { get; }
         string Languages { get; }
         int PageSize { get; }
+        IEnumerable<int> ExcludedCategoryIds { get; }
+        IEnumerable<int> ExcludedFamilyIds { get; }
+        IEnumerable<int> ExcludedFileIds { get; }
+        string CacheDir { get; }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.AccessControl;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -6,7 +7,7 @@ namespace Illallangi.Msdn
 {
     public static class RestClientExtensions
     {
-        public static T HttpGet<T>(this IRestClient client, string resource, IEnumerable<KeyValuePair<string, string>> parameters = null, string rootElement = null)
+        public static RestResult<T> HttpGet<T>(this IRestClient client, string resource, IEnumerable<KeyValuePair<string, string>> parameters = null, string rootElement = null) where T : class
         {
             var request = new RestRequest(resource, Method.GET);
 
@@ -24,10 +25,10 @@ namespace Illallangi.Msdn
             }
 
             var response = client.Execute(request);
-            return JsonConvert.DeserializeObject<T>(response.Content);
+            return new RestResult<T>(response.Content);
         }
 
-        public static T HttpPost<T>(this IRestClient client, string resource, object body = null, string rootElement = null)
+        public static RestResult<T> HttpPost<T>(this IRestClient client, string resource, object body = null, string rootElement = null) where T : class
         {
             var request = new RestRequest(resource, Method.POST);
 
@@ -43,7 +44,28 @@ namespace Illallangi.Msdn
             }
 
             var response = client.Execute(request);
-            return JsonConvert.DeserializeObject<T>(response.Content);
+            return new RestResult<T>(response.Content);
+        }
+    }
+
+    public class RestResult<T> where T: class
+    {
+        private T currentResult;
+        private readonly string currentRaw;
+
+        public RestResult(string raw)
+        {
+            this.currentRaw = raw;
+        }
+
+        public T Result
+        {
+            get { return this.currentResult ?? (this.currentResult = JsonConvert.DeserializeObject<T>(this.Raw)); }
+        }
+
+        public string Raw
+        {
+            get { return this.currentRaw; }
         }
     }
 }

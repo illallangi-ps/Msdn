@@ -65,10 +65,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\IRestCache.cs" />
+    <Compile Include="Client\RestCache.cs" />
+    <Compile Include="Config\ExcludedIdConfigurationElement.cs" />
+    <Compile Include="Config\ExcludedIdConfigurationElementCollection.cs" />
     <Compile Include="Model\FileSearchResult.cs" />
-    <Compile Include="Client\IFileSearchClient.cs" />
+    <Compile Include="Client\IFileClient.cs" />
     <Compile Include="Client\IProductCategoryClient.cs" />
     <Compile Include="Client\IProductFamilyClient.cs" />
+    <Compile Include="Client\FolderStructureClient.cs" />
+    <Compile Include="Client\IFolderStructureClient.cs" />
+    <Compile Include="Powershell\NewFolderStructure.cs" />
     <Compile Include="RestClientExtensions.cs" />
     <Compile Include="Config\MsdnConfigUris.cs" />
     <Compile Include="Config\IConfig.cs" />

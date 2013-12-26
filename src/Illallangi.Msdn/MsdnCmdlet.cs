@@ -4,6 +4,7 @@ using System.Management.Automation;
 using Illallangi.Msdn.Config;
 using Illallangi.Msdn.Powershell;
 using Ninject;
+using Ninject.Extensions.Logging;
 using Ninject.Extensions.Logging.Log4net;
 
 namespace Illallangi.Msdn
@@ -11,8 +12,36 @@ namespace Illallangi.Msdn
     [Cmdlet(VerbsCommon.Get, MsdnNouns.Abstract)]
     public abstract class MsdnCmdlet<T> : PSCmdlet where T: class
     {
+        #region Fields
+
         private StandardKernel currentKernel;
         private MsdnModule currentModule;
+        
+        #endregion
+        
+        #region Methods
+
+        protected override void ProcessRecord()
+        {
+            try
+            {
+                this.WriteObject(this.Process(this.Kernel.Get<T>()), true); 
+            }
+            catch (Exception failure)
+            {
+                this.WriteError(new ErrorRecord(
+                    failure,
+                    failure.Message,
+                    ErrorCategory.InvalidResult,
+                    this.Kernel.Get<IConfig>()));
+            }
+        }
+
+        protected abstract IEnumerable<Object> Process(T client);
+
+        #endregion
+
+        #region Property
 
         private MsdnModule Module
         {
@@ -30,22 +59,6 @@ namespace Illallangi.Msdn
             }
         }
 
-        protected override void ProcessRecord()
-        {
-            try
-            {
-                this.WriteObject(this.Process(this.Kernel.Get<T>()), true);
-            }
-            catch (Exception failure)
-            {
-                this.WriteError(new ErrorRecord(
-                    failure,
-                    failure.Message,
-                    ErrorCategory.InvalidResult,
-                    this.Kernel.Get<IConfig>()));
-            }
-        }
-
-        protected abstract IEnumerable<Object> Process(T client);
+        #endregion
     }
 }

@@ -16,5 +16,10 @@
         {
             get { return @"GetFileSearchResult"; }
         }
+
+        public string GetFileDetail
+        {
+            get { return @"GetFileDetail"; }
+        }
     }
 }

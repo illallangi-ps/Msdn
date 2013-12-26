@@ -2,6 +2,7 @@
 using System.Reflection;
 using Illallangi.Msdn.Client;
 using Illallangi.Msdn.Config;
+using Illallangi.Msdn.Model;
 using log4net.Config;
 using Ninject;
 using Ninject.Modules;
@@ -29,12 +30,20 @@ namespace Illallangi.Msdn
                 .To<MsdnClient>()
                 .InSingletonScope();
             
-            this.Bind<IFileSearchClient>()
+            this.Bind<IFileClient>()
                 .To<MsdnClient>()
+                .InSingletonScope();
+
+            this.Bind<IFolderStructureClient>()
+                .To<FolderStructureClient>()
                 .InSingletonScope();
 
             this.Bind<IRestClient>()
                 .ToMethod(cx => new RestClient(cx.Kernel.Get<IConfig>().BaseUrl))
+                .InSingletonScope();
+
+            this.Bind<IRestCache>()
+                .To<RestCache>()
                 .InSingletonScope();
 
             this.Bind<IConfig>()
