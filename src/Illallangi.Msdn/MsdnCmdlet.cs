@@ -25,7 +25,11 @@ namespace Illallangi.Msdn
         {
             try
             {
-                this.WriteObject(this.Process(this.Kernel.Get<T>()), true); 
+                this.WriteObject(this.Process(this.Kernel.Get<T>()), true);
+            }
+            catch (PipelineStoppedException)
+            {
+                //noop
             }
             catch (Exception failure)
             {
@@ -34,6 +38,7 @@ namespace Illallangi.Msdn
                     failure.Message,
                     ErrorCategory.InvalidResult,
                     this.Kernel.Get<IConfig>()));
+                throw failure;
             }
         }
 

@@ -7,6 +7,7 @@ namespace Illallangi.Msdn.Powershell
     [Cmdlet(VerbsCommon.Get, MsdnNouns.MsdnFamily)]
     public sealed class GetMsdnFamily : MsdnCmdlet<IProductFamilyClient>
     {
+        [Alias("ProductGroupId")]
         [Parameter(Mandatory = true)]
         public int CategoryId { get; set; }
 

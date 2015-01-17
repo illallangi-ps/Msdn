@@ -63,8 +63,26 @@ namespace Illallangi.Msdn.Client
                 {
                     foreach (var msdnStubFile in this.FileClient.GetFileSearchResult(msdnFamily.ProductFamilyId))
                     {
-                        string json;
-                        var msdnFile = this.FileClient.GetFileDetail(msdnStubFile.FileId, out json);
+                        var json = string.Empty;
+                        Model.File msdnFile = null;
+
+                        try
+                        {
+                            msdnFile = this.FileClient.GetFileDetail(msdnStubFile.FileId, out json);
+                        }
+                        catch (PathTooLongException e)
+                        {
+                            this.Logger.Error(e, "Unable to GetFileDetail for msdnStubFile.FileId = {0}", msdnStubFile.FileId);
+                        }
+                        catch (ArgumentException e)
+                        {
+                            this.Logger.Error(e, "Unable to GetFileDetail for msdnStubFile.FileId = {0}", msdnStubFile.FileId);
+                        }
+
+                        if (null == msdnFile)
+                        {
+                            continue;
+                        }
 
                         var path = Path.Combine(Path.GetFullPath("."), msdnCategory.ToString(), msdnFamily.ToString(), msdnFile.ToString());
                         this.Logger.Debug(@"Directory.CreateDirectory(""{0}""", path);
@@ -73,6 +91,10 @@ namespace Illallangi.Msdn.Client
                             Directory.CreateDirectory(path);
                         }
                         catch (PathTooLongException e)
+                        {
+                            this.Logger.Error(e, "Unable to create directory for msdnFile {0} (msdnFile.FileId = {1})", msdnFile.FileName, msdnFile.FileId);
+                        }
+                        catch (ArgumentException e)
                         {
                             this.Logger.Error(e, "Unable to create directory for msdnFile {0} (msdnFile.FileId = {1})", msdnFile.FileName, msdnFile.FileId);
                         }
@@ -90,6 +112,10 @@ namespace Illallangi.Msdn.Client
                         {
                             this.Logger.Error(e, "Unable to create readme.html for msdnFile {0} (msdnFile.FileId = {1})", msdnFile.FileName, msdnFile.FileId);
                         }
+                        catch (ArgumentException e)
+                        {
+                            this.Logger.Error(e, "Unable to create readme.html for msdnFile {0} (msdnFile.FileId = {1})", msdnFile.FileName, msdnFile.FileId);
+                        }
 
                         try
                         {
@@ -104,7 +130,11 @@ namespace Illallangi.Msdn.Client
                         {
                             this.Logger.Error(e, "Unable to create fileinfo.json for msdnFile {0} (msdnFile.FileId = {1})", msdnFile.FileName, msdnFile.FileId);
                         }
-                        
+                        catch (ArgumentException e)
+                        {
+                            this.Logger.Error(e, "Unable to create fileinfo.json for msdnFile {0} (msdnFile.FileId = {1})", msdnFile.FileName, msdnFile.FileId);
+                        }
+
                         try
                         {
                             File.WriteAllText(
@@ -115,8 +145,10 @@ namespace Illallangi.Msdn.Client
                         {
                             this.Logger.Error(e, "Unable to create checksums.sha1 for msdnFile {0} (msdnFile.FileId = {1})", msdnFile.FileName, msdnFile.FileId);
                         }
-
-
+                        catch (ArgumentException e)
+                        {
+                            this.Logger.Error(e, "Unable to create checksums.sha1 for msdnFile {0} (msdnFile.FileId = {1})", msdnFile.FileName, msdnFile.FileId);
+                        }
                     }
                 }
             }
